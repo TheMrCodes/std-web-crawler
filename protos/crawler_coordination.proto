@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+// Possible options for a multi-language use of this proto file:
+// option java_multiple_files = true;
+// option java_package = "io.grpc.examples.helloworld";
+// option java_outer_classname = "HelloWorldProto";
+// option objc_class_prefix = "HLW";
+
+
+package std_web_crawler;
+
+// Scenario description
+// There a three services one scheduler and two workers. 
+// The job of the scheduler is to controll the access to a resource both workers need 
+// and it enforces the Rate Limit for this central resource. 
+// Workers on the other hand request new jobs from the scheduler 
+// which gets a new job checks the rate limit and sends the job response directly
+// if possible or waits until the access is possible and then notifies the worker who requested the job.
+
+// The scheduler is the central service which controlls the access to the resource
+service Scheduler {
+    // First method called by a worker to register itself to the scheduler
+    rpc RegisterAsWorker (RegisterAsWorkerRequest) returns (RegisterAsWorkerReply) {}
+
+    // Second method called by a worker to request a new job. The jobs will then be sent to the worker via the stream
+    rpc GetJobs (stream GetJobsRequest) returns (stream GetJobsReply) {}
+}
+
+message RegisterAsWorkerRequest {}
+message RegisterAsWorkerReply {
+    // The id of the worker
+    string id = 1;
+}
+
+
+// Enum for the status of a job
+enum JobStatus {
+    // The job is finished
+    FINISHED = 0;
+    // The job failed
+    FAILED = 1;
+}
+
+// Request to get a new job
+message GetJobsRequest {
+    // The id of the worker
+    string id = 1;
+    // Optional id of the last job
+    string last_job_id = 2;
+    // Optional status of the last job
+    JobStatus last_job_status = 3;
+    // Optional Error message of the last job
+    string last_job_error = 4;
+}
+message GetJobsReply {
+    // The id of the worker
+    string id = 1;
+    // The url of the job
+    string url = 2;
+    // The retries when the job fails
+    string retries = 3;
+}

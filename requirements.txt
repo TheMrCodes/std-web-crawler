@@ -1,0 +1,9 @@
+selenium
+beautifulsoup4
+pandas
+tqdm
+aiohttp
+pyarrow
+python-dotenv 
+grpcio
+protobuf

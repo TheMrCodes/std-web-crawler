@@ -1,0 +1,55 @@
+---
+services:
+  scheduler:
+    image: themrcodes/std-web-crawler
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "python -m run_scheduler"
+    environment:
+      - APP_OUTPUT_DIR=/app/out
+      - APP_SCHEDULER_DATABASE_URL=postgres://postgres:postgres@postgres:5432/std_web_crawler
+      - APP_SCHEDULER_GRPC_LIST_ADDR=[::]:50051
+    volumes:
+      - .:/app
+    networks:
+      - default
+    #restart: unless-stopped
+
+  worker1:
+    image: themrcodes/std-web-crawler
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "python -m run_worker"
+    environment:
+      - APP_OUTPUT_DIR=/app/out
+      - APP_WORKER_SCHEDULER_URL=scheduler:50051
+    volumes:
+      - .:/app
+    networks:
+      - default
+    depends_on:
+      - scheduler
+    #restart: unless-stopped
+  
+  postgres:
+    image: docker.io/library/postgres:latest
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=std_web_crawler
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
+    restart: unless-stopped
+
+networks:
+  default: {}
+
+volumes:
+  postgres_data: {}

@@ -1,0 +1,19 @@
+# Ignore IDE files
+#.vscode
+.idea
+.venv
+
+# Ignore Python virtual environment
+venv
+.venv
+.env
+*.pyc
+__pycache__
+
+# Ignore Python distribution
+dist
+build
+*.egg-info
+
+# Ignore all data files in the output directory
+out/

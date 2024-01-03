@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Main",
+            "type": "python",
+            "request": "launch",
+            "module": "std_web_crawler.main",
+            "justMyCode": true
+        },
+        {
+            "name": "testing",
+            "type": "python",
+            "request": "launch",
+            "module": "std_web_crawler.test",
+            "justMyCode": false
+        },
+        {
+            "name": "Run Scheduler",
+            "type": "python",
+            "request": "launch",
+            "module": "run_scheduler",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run Worker",
+            "type": "python",
+            "request": "launch",
+            "module": "run_worker",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+    ]
+}

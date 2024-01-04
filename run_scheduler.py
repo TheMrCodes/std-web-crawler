@@ -6,12 +6,16 @@ import grpc
 import time
 import os
 from typing import AsyncGenerator, List
+
+from sqlalchemy import create_engine
 from std_web_crawler.communication.grpc import crawler_coordination_pb2_grpc as grpc_services
 from std_web_crawler.communication.grpc.GrpcSchedulerService import GrpcSchedulerService
+from std_web_crawler.db import BaseModel
 from std_web_crawler.model.job import Job
-from std_web_crawler.rate_limits import RateLimit, RateLimitManager
+from std_web_crawler.services.jobs import JobManager
+from std_web_crawler.services.rate_limits import RateLimit, RateLimitManager
 from std_web_crawler.utils import coroutine
-from std_web_crawler.error import error
+from std_web_crawler.error import ExitCode, error
 dotenv.load_dotenv()
 
 
@@ -57,8 +61,17 @@ async def start_scheduler(service: GrpcSchedulerService, url_gen: AsyncGenerator
 
 async def main():
     async with coroutine.create_context() as ctx:
-            
-        #TODO create actor that loads urls from database in chuncks into memory and provides them as stream
+        # Connect and create database
+        engine = create_engine('postgresql://postgres:postgres@localhost:5432/std_web_crawler')
+
+        # create all model tables
+        metadata = BaseModel.metadata
+        logging.info("Creating following tables:")
+        for t in metadata.sorted_tables:
+            print(t.name)
+        metadata.create_all(engine, checkfirst=True)
+
+        #TODO: create actor that loads urls from database in chuncks into memory and provides them as stream
         async def url_generator() -> AsyncGenerator[str, None]:
             while True:
                 yield "https://derstandard.at"
@@ -69,6 +82,8 @@ async def main():
         rate_limit_manager = RateLimitManager({
             STANDARD_SERVICE: RateLimit(rpm=60)
         })
+        # TODO: Add job manager class that manages the job queue
+        jobmanager = JobManager()
         service = GrpcSchedulerService(rate_limit_manager)
 
 
@@ -85,5 +100,6 @@ if __name__ == "__main__":
         loop.run_until_complete(main())
     finally:
         logging.info("Shutting down gracefully...")
-        loop.run_until_complete(*_cleanup_coroutines)
+        if len(_cleanup_coroutines) > 0:
+            loop.run_until_complete(*_cleanup_coroutines)
         loop.close()

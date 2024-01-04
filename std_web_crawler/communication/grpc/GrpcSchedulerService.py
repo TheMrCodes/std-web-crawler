@@ -7,7 +7,7 @@ from typing import AsyncGenerator, AsyncIterator, List, Union
 from std_web_crawler.communication.grpc import crawler_coordination_pb2_grpc as grpc_services
 from std_web_crawler.communication.grpc import crawler_coordination_pb2 as grpc_messages
 from std_web_crawler.model.job import Job, JobsFinished
-from std_web_crawler.rate_limits import RateLimitManager
+from std_web_crawler.services.rate_limits import RateLimitManager
 from std_web_crawler.error import ExitCode, error
 
 

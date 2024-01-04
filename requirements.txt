@@ -7,3 +7,5 @@ pyarrow
 python-dotenv 
 grpcio
 protobuf
+sqlalchemy
+psycopg2

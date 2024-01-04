@@ -25,7 +25,6 @@ async def main():
             count += 1
             if count % 100_000 == 0:
                 print(f'Fetched {count} urls.')
-                break
 
         # pandas
         urls_df = pd.DataFrame(urls)
